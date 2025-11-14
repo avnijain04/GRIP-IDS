@@ -28,15 +28,12 @@ def build_lstm(input_shape, num_classes):
 def build_hybrid(input_shape, num_classes):
     inputs = layers.Input(shape=input_shape)
 
-    # CNN branch
     c = layers.Conv1D(MODEL["cnn_filters"], MODEL["cnn_kernel"], activation='relu')(inputs)
     c = layers.MaxPooling1D()(c)
     c = layers.Flatten()(c)
 
-    # BiLSTM branch
     l = layers.Bidirectional(layers.LSTM(MODEL["lstm_units"]))(inputs)
 
-    # Merge
     x = layers.concatenate([c, l])
     x = layers.Dense(MODEL["dense_units"], activation='relu')(x)
     x = layers.Dropout(MODEL["dropout"])(x)
