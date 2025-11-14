@@ -1,4 +1,4 @@
-# Virtual environment
+# Virtual environments
 .venv/
 venv/
 env/
@@ -8,15 +8,15 @@ __pycache__/
 *.pyc
 *.pyo
 
-# OS cache
+# OS junk
 .DS_Store
 
-# Model files
+# Model files (trained outputs)
 models/
 *.h5
 *.keras
 
-# Results / outputs
+# Results/plots/logs
 results/
 *.png
 *.jpg
@@ -24,12 +24,17 @@ results/
 *.json
 *.npz
 
-# IDE folders
-.vscode/
-.idea/
-
-# Large datasets
+# Dataset (CICIoT2023)
 data/train.csv
 data/test.csv
 data/validation.csv
 data/processed/
+
+# IDE configs
+.vscode/
+.idea/
+
+# TensorFlow / large binaries accidentally tracked
+*.dll
+*.so
+*.exe
