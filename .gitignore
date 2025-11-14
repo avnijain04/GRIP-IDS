@@ -1,0 +1,35 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS cache
+.DS_Store
+
+# Model files
+models/
+*.h5
+*.keras
+
+# Results / outputs
+results/
+*.png
+*.jpg
+*.csv
+*.json
+*.npz
+
+# IDE folders
+.vscode/
+.idea/
+
+# Large datasets
+data/train.csv
+data/test.csv
+data/validation.csv
+data/processed/
