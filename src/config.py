@@ -1,7 +1,5 @@
-# src/config.py
-
-MACHINE = "4GB"      
-#MACHINE = "32GB"        
+MACHINE = "4GB"
+#MACHINE = "32GB"
 
 ############ DATASET SETTINGS ############
 SMALL_SAMPLE = (MACHINE == "4GB")
@@ -16,6 +14,15 @@ X_TRAIN_FILE = f"{PROCESSED_DIR}/X_train.csv"
 X_TEST_FILE = f"{PROCESSED_DIR}/X_test.csv"
 Y_TRAIN_FILE = f"{PROCESSED_DIR}/y_train.csv"
 Y_TEST_FILE = f"{PROCESSED_DIR}/y_test.csv"
+
+# New: preferred numpy save paths (recommended for DL)
+X_TRAIN_NPY = f"{PROCESSED_DIR}/X_train.npy"
+X_TEST_NPY = f"{PROCESSED_DIR}/X_test.npy"
+Y_TRAIN_NPY = f"{PROCESSED_DIR}/y_train.npy"
+Y_TEST_NPY = f"{PROCESSED_DIR}/y_test.npy"
+
+# How many timesteps per sequence (tunable)
+SEQUENCE_LENGTH = 20
 
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
@@ -34,33 +41,33 @@ if MACHINE == "4GB":
     }
 else:
     MODEL = {
-        "cnn_filters": 128,
+        "cnn_filters": 32,
         "cnn_kernel": 3,
-        "lstm_units": 128,
-        "dense_units": 128,
+        "lstm_units": 32,
+        "dense_units": 64,
         "dropout": 0.3,
         "batch_size": 64,
-        "epochs": 10
+        "epochs": 5
     }
 
 ############ SHAP SETTINGS ############
 if MACHINE == "4GB":
     SHAP = {"use_kernel": True, "background_size": 30, "explain_size": 100}
 else:
-    SHAP = {"use_kernel": False, "background_size": 1000, "explain_size": 10000}
+    SHAP = {"use_kernel": False, "background_size": 300, "explain_size": 800}
 
 ############ FEDERATED SETTINGS ############
 if MACHINE == "4GB":
     NUM_CLIENTS = 3
-    SAMPLES_PER_CLIENT = 2000
-    ROUNDS = 5
+    SAMPLES_PER_CLIENT = 800
+    ROUNDS = 3
     LOCAL_EPOCHS = 1
-    LOCAL_BATCH = 4
+    LOCAL_BATCH = 32
 else:
-    NUM_CLIENTS = 20
-    SAMPLES_PER_CLIENT = 200_000
-    ROUNDS = 20
-    LOCAL_EPOCHS = 5
+    NUM_CLIENTS = 10
+    SAMPLES_PER_CLIENT = 8_000
+    ROUNDS = 5
+    LOCAL_EPOCHS = 2
     LOCAL_BATCH = 64
 
 FEDPROX_MU = 0.01
@@ -83,9 +90,9 @@ if MACHINE == "4GB":
     SECURE_NUM_CLIENTS = 3
     SECURE_SAMPLES_PER_CLIENT = 2000
 else:
-    SECURE_NUM_CLIENTS = 20
-    SECURE_SAMPLES_PER_CLIENT = 200000
+    SECURE_NUM_CLIENTS = 5
+    SECURE_SAMPLES_PER_CLIENT = 10000
 
 SECURE_ROUNDS = 3
 SECURE_LOCAL_EPOCHS = 1
-SECURE_LOCAL_BATCH = 8
+SECURE_LOCAL_BATCH = 16

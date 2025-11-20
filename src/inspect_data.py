@@ -1,4 +1,3 @@
-# src/inspect_data.py
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
@@ -6,50 +5,43 @@ import matplotlib.pyplot as plt
 import os
 
 from load_data import load_ciciot
-from config import SMALL_SAMPLE, N_ROWS_SMALL
+from config import SMALL_SAMPLE, N_ROWS_SMALL, SEQUENCE_LENGTH
 
 def inspect():
-    print("Loading dataset for inspection...")
-    df = load_ciciot()   # already handles SMALL_SAMPLE internally
+    df = load_ciciot()
 
-    print("\n=== BASIC INFO ===")
     print("Rows:", len(df))
     print("Columns:", df.columns.tolist())
 
-    if 'label' not in df.columns:
-        raise ValueError("Dataset must contain a 'label' column.")
+    if "Label" in df.columns:
+        df.rename(columns={"Label": "label"}, inplace=True)
 
-    print("\n=== LABEL DISTRIBUTION ===")
-    dist = df['label'].value_counts().sort_index()
-    print(dist)
+    dist = df["label"].value_counts()
+    print("\nLabel Distribution:\n", dist)
 
+    rare = dist[dist < 5]
+    if len(rare) > 0:
+        print("\nRare (<5) classes:", rare)
+
+    # Plot
     os.makedirs("results", exist_ok=True)
-
-    # Plot label distribution
-    plt.figure(figsize=(8, 4))
+    plt.figure(figsize=(14, 8))  # wide enough for long labels
     dist.plot(kind='bar')
-    plt.title("Label Distribution")
-    plt.xlabel("Label")
-    plt.ylabel("Count")
+
+    plt.title("Label Distribution", fontsize=16)
+    plt.xlabel("Label", fontsize=12)
+    plt.ylabel("Count", fontsize=12)
+
+    plt.xticks(rotation=75, ha="right", fontsize=8)  # rotate to prevent cut-off
     plt.tight_layout()
-    plt.savefig("results/label_dist.png")
+
+    plt.savefig("results/label_dist.png", dpi=300, bbox_inches='tight')
     plt.close()
-    print("Saved: results/label_dist.png")
 
-    # Summary stats for numeric columns
-    numeric_cols = df.select_dtypes(include=['number']).columns.tolist()
-    print("\n=== NUMERIC SUMMARY ===")
-    if len(numeric_cols) == 0:
-        print("No numeric columns found.")
-    else:
-        print(df[numeric_cols].describe())
-
-    # Optional sample preview
-    print("\n=== SAMPLE ROWS ===")
-    print(df.head(5))
+    print("\nDefault SEQUENCE_LENGTH:", SEQUENCE_LENGTH)
 
     if SMALL_SAMPLE:
-        print(f"\nNOTE: SMALL_SAMPLE=True, dataset was limited to {N_ROWS_SMALL} rows.")
+        print(f"NOTE: SMALL_SAMPLE enabled: using first {N_ROWS_SMALL} rows.")
 
 if __name__ == "__main__":
     inspect()
