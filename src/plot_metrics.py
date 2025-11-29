@@ -1,4 +1,3 @@
-# src/plot_metrics.py
 import os
 import numpy as np
 import matplotlib
@@ -26,16 +25,7 @@ def plot_confusion_matrix(cm: np.ndarray,
                           normalize: bool = True,
                           annot: bool = True,
                           labels: Optional[Sequence[str]] = None):
-    """
-    Save a confusion matrix image.
-
-    Args:
-        cm: 2D confusion matrix (np.ndarray)
-        outpath: path to save image (e.g. "results/cnn_confusion.png")
-        normalize: if True normalize rows to sum=1 (per-class recall normalization)
-        annot: if True annotate cells with numbers
-        labels: optional list of label names for ticks
-    """
+    
     ensure_dir(outpath)
     cm = np.array(cm, dtype=np.float64)
 
@@ -73,17 +63,6 @@ def _safe_onehot(y, num_classes):
 
 
 def plot_roc_pr(y_true: np.ndarray, y_prob: np.ndarray, out_prefix: str):
-    """
-    Produce ROC and PR plots for multi-class or binary problems.
-
-    - Saves per-class ROC: <out_prefix>_roc_class{i}.png
-    - Saves per-class PR:  <out_prefix>_pr_class{i}.png
-    - Saves combined multi-class ROC/PR if possible:
-        <out_prefix>_roc_curves.png and <out_prefix>_pr_curves.png
-
-    y_true: (n,) integer labels
-    y_prob: (n, C) probabilities (softmax outputs) or (n,) for binary probs
-    """
     ensure_dir(out_prefix + "_roc_class0.png")
 
     y_true = np.asarray(y_true)
@@ -188,10 +167,6 @@ def plot_roc_pr(y_true: np.ndarray, y_prob: np.ndarray, out_prefix: str):
 
 
 def per_class_accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
-    """
-    Return dictionary {class_label: accuracy_for_that_class}
-    where accuracy_for_that_class = correct_preds_for_class / total_true_for_class.
-    """
     y_true = np.asarray(y_true, dtype=int)
     y_pred = np.asarray(y_pred, dtype=int)
     classes = np.unique(np.concatenate([y_true, y_pred]))

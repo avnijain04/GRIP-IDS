@@ -1,4 +1,3 @@
-# src/crypto_utils.py
 import os
 from io import BytesIO
 import numpy as np
@@ -28,9 +27,6 @@ def pack_signed_update(signature: bytes, raw_weights: bytes) -> bytes:
     bio.seek(0)
     return bio.read()
 
-
-
-
 def unpack_signed_update(packed: bytes):
     bio = BytesIO(packed)
     npz = np.load(bio)
@@ -38,14 +34,8 @@ def unpack_signed_update(packed: bytes):
     raw = npz["raw"].tobytes()
     return sig, raw
 
-
-
-
 def generate_aes_key():
     return AESGCM.generate_key(bit_length=256)  
-
-
-
 
 def aes_encrypt(key: bytes, plaintext: bytes):
     aesgcm = AESGCM(key)
@@ -53,29 +43,17 @@ def aes_encrypt(key: bytes, plaintext: bytes):
     ct = aesgcm.encrypt(nonce, plaintext, associated_data=None)
     return nonce, ct
 
-
-
-
 def aes_decrypt(key: bytes, nonce: bytes, ciphertext: bytes):
     aesgcm = AESGCM(key)
     return aesgcm.decrypt(nonce, ciphertext, associated_data=None)
-
-
-
 
 def generate_ed25519_keypair():
     priv = Ed25519PrivateKey.generate()
     pub = priv.public_key()
     return priv, pub
 
-
-
-
 def sign_bytes(priv: Ed25519PrivateKey, data: bytes) -> bytes:
     return priv.sign(data)
-
-
-
 
 def verify_signature(pub: Ed25519PublicKey, signature: bytes, data: bytes) -> bool:
     try:
@@ -84,10 +62,8 @@ def verify_signature(pub: Ed25519PublicKey, signature: bytes, data: bytes) -> bo
     except Exception:
         return False
 
-
 def serialize_public_key(pub: Ed25519PublicKey) -> bytes:
     return pub.public_bytes(encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw)
-
 
 def deserialize_public_key(raw: bytes) -> Ed25519PublicKey:
     return Ed25519PublicKey.from_public_bytes(raw)

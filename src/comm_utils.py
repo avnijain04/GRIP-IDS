@@ -1,4 +1,3 @@
-# src/comm_utils.py
 import io
 import numpy as np
 import os
@@ -6,14 +5,12 @@ import tempfile
 import time
 
 def serialized_size_bytes(weights_list):
-    """Serialize list-of-arrays deterministically and return size in bytes."""
     bio = io.BytesIO()
     # use numpy.save with allow_pickle True to preserve list-of-arrays ordering
     np.save(bio, np.asarray(weights_list, dtype=object), allow_pickle=True)
     return len(bio.getvalue())
 
 def model_disk_size_bytes(tf_model, tmp_name=None):
-    """Save model temporarily to disk and return file size (bytes)."""
     if tmp_name is None:
         tmp_name = tempfile.mktemp(suffix=".keras")
     tf_model.save(tmp_name, overwrite=True)
@@ -32,11 +29,6 @@ def human_readable_bytes(n):
     return f"{n:.2f}TB"
 
 def time_inference(model, sample, repeats=50):
-    """
-    Measure average inference time (seconds) of `model` on the given sample.
-    sample: numpy array shaped as model input (single batch or multiple).
-    Keep measurement simple (wall-clock).
-    """
     t0 = time.time()
     for _ in range(repeats):
         model.predict(sample, verbose=0)

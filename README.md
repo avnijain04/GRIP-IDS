@@ -231,10 +231,6 @@ You may modify or extend it with proper attribution.
 
 ---
 
-# **10. Contact**
-
-For questions or replication assistance:
-
 **Team:**
 
 * Avni Jain

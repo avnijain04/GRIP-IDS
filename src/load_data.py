@@ -1,10 +1,6 @@
-# load_data.py — robust single-CSV loader
 import pandas as pd
 import os
 from config import TRAIN_FILE, TEST_FILE, VALID_FILE, SMALL_SAMPLE, N_ROWS_SMALL
-
-
-
 
 def load_ciciot():
     files = []

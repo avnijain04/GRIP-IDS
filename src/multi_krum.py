@@ -1,12 +1,8 @@
-# src/multi_krum.py
 import numpy as np
 
 def flatten_weights(weight_list):
     flat = np.concatenate([w.flatten() for w in weight_list])
     return flat
-
-
-
 
 def multi_krum(weight_list, f=1, m=1):
     n = len(weight_list)

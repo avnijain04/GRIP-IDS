@@ -1,5 +1,4 @@
 """
-federated_secure.py
 Simulated secure aggregation: clients locally train, then send AES-encrypted + signed updates.
 Server verifies signatures and deserializes safely before aggregation.
 Produces timing comparison plots and accepted/rejected counts.
@@ -127,10 +126,8 @@ def evaluate_global(weights_list, X_test, y_test, global_num_classes):
     return float(accuracy_score(y_test, preds))
 
 
-
 def shapes_template_from_weights(weights_list):
     return [tuple(w.shape) for w in weights_list]
-
 
 def weight_shapes_match(candidate_weights, template_shapes):
     if len(candidate_weights) != len(template_shapes):

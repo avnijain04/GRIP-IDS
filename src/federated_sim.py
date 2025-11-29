@@ -1,9 +1,6 @@
-# src/federated_sim.py
-# Robust federated simulation helper (drop into src/)
 import os
 import sys
 
-# Ensure src/ is on sys.path so local imports work whether run as "python src/..." or "python -m src.federated_sim"
 _this_dir = os.path.dirname(os.path.abspath(__file__))
 _root_dir = os.path.abspath(os.path.join(_this_dir, ".."))
 if _this_dir not in sys.path:
@@ -27,9 +24,6 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 tf.get_logger().setLevel("ERROR")
 
-# -------------------------------------------
-# FIXED IMPORTS (consistent: from src.*)
-# -------------------------------------------
 from src.config import (
     RANDOM_SEED,
     NUM_CLIENTS,
@@ -49,7 +43,6 @@ from src.fl_utils import (
 from src.model_defs import build_cnn, build_hybrid
 from tensorflow.keras import optimizers, losses
 
-# optional comm utils
 try:
     from src.comm_utils import serialized_size_bytes
 except Exception:
@@ -61,7 +54,6 @@ except Exception:
         return int(s)
 
 
-# determinism
 np.random.seed(RANDOM_SEED)
 tf.random.set_seed(RANDOM_SEED)
 
@@ -71,13 +63,8 @@ MODELS_DIR = "models"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-# -------------------------------------------
-# FIXED: Unified model builder for whole sim
-# -------------------------------------------
-MODEL_BUILDER = build_hybrid   # or build_cnn, but must stay consistent
+MODEL_BUILDER = build_hybrid   
 
-
-# ------------------------- Data utilities -------------------------
 def load_processed_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Loads NPY arrays (saved by preprocess) and returns arrays.
@@ -147,9 +134,6 @@ def dirichlet_partition(X: np.ndarray, y: np.ndarray, num_clients: int, alpha: f
                 client_idx[cid].extend(idxs[ptr:ptr+take])
                 ptr += take
 
-    # ------------------------------------
-    # FIXED: final safeguard (empty client)
-    # ------------------------------------
     n_total = X.shape[0]
     for cid in range(num_clients):
         if len(client_idx[cid]) == 0:
@@ -200,9 +184,6 @@ def client_update(global_weights: List[np.ndarray], X: np.ndarray, y: np.ndarray
                 logits = model(xb, training=True)
                 loss_value = loss_fn(yb, logits)
 
-                # -----------------------------------------------------
-                # FIXED: Correct FedProx penalty (no double counting)
-                # -----------------------------------------------------
                 if mu > 0.0:
                     prox = tf.constant(0.0, dtype=tf.float32)
                     for v, g in zip(model.trainable_variables, gw):
@@ -236,9 +217,6 @@ def evaluate_model_on_global(model_weights: List[np.ndarray], X_test: np.ndarray
     else:
         X_in = X_test
 
-    # --------------------------------------------------------
-    # FIXED: correct class count (no assumption y starts at 0)
-    # --------------------------------------------------------
     num_classes = len(np.unique(y_test))
 
     model = model_builder(input_shape=(X_in.shape[1], X_in.shape[2]), num_classes=num_classes)
@@ -305,9 +283,6 @@ def run_federated_simulation(strategy: str = 'fedavg', mu: float = 0.0, alpha: f
         else:
             raise ValueError(f"Unknown strategy: {strategy}")
 
-        # --------------------------------------------
-        # FIXED: ensure all weights are float32
-        # --------------------------------------------
         global_weights = [w.astype(np.float32) for w in new_global]
 
         metrics = evaluate_model_on_global(global_weights, X_test, y_test, MODEL_BUILDER)
@@ -337,9 +312,6 @@ def run_federated_simulation(strategy: str = 'fedavg', mu: float = 0.0, alpha: f
     with open(os.path.join(RESULTS_DIR, f"{save_prefix}_logs_{strategy}.json"), "w") as f:
         json.dump(logs, f, indent=2)
 
-    # ------------------------------------------------------
-    # FIXED: timestamp to avoid overwriting plots
-    # ------------------------------------------------------
     timestamp = int(time.time())
     rounds = logs["round"]
     accs = [m["accuracy"] for m in logs["global_metrics"]]

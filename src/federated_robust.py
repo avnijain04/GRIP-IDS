@@ -1,4 +1,3 @@
-# src/federated_robust.py
 import os
 import time
 import random
@@ -15,7 +14,6 @@ from sklearn.metrics import (
     f1_score, confusion_matrix
 )
 
-# FIXED IMPORTS (must use src.*)
 from config import (
     RANDOM_SEED,
     BYZANTINE_RATIO,
@@ -35,7 +33,6 @@ from attacks import label_flip_attack, weight_scaling_attack, sign_attack
 from multi_krum import multi_krum
 from comm_utils import serialized_size_bytes
 
-# Determinism
 tf.random.set_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 random.seed(RANDOM_SEED)
@@ -46,10 +43,6 @@ MODELS_DIR = "models"
 os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-
-# ================================================================
-# FIXED: NPY-based data loader + correct 3D shaping
-# ================================================================
 def load_processed_data():
     X_train = np.load(f"{PROCESSED_DIR}/X_train.npy")
     y_train = np.load(f"{PROCESSED_DIR}/y_train.npy")
@@ -68,10 +61,6 @@ def load_processed_data():
         y_test.astype(np.int32)
     )
 
-
-# ================================================================
-# FIXED Non-IID sampler (guarantees no empty sample)
-# ================================================================
 def create_non_iid_partitions(X, y, num_clients, samples_per_client, seed=RANDOM_SEED):
     df = pd.DataFrame(X.reshape(X.shape[0], -1))
     df["label"] = y
@@ -84,7 +73,6 @@ def create_non_iid_partitions(X, y, num_clients, samples_per_client, seed=RANDOM
 
     for cid in range(num_clients):
 
-        # Always choose between 1 and C classes
         if C >= 2:
             k = rng.randint(1, C + 1)
         else:
@@ -114,10 +102,6 @@ def create_non_iid_partitions(X, y, num_clients, samples_per_client, seed=RANDOM
 
     return clients
 
-
-# ================================================================
-# FIXED local_train: correct input shape + correct FedProx math
-# ================================================================
 def local_train(
     model_builder, global_weights, global_num_classes, X, y,
     local_epochs=1, batch_size=LOCAL_BATCH, lr=1e-3, mu=0.0
@@ -152,7 +136,6 @@ def local_train(
             logits = model(xb, training=True)
             loss_value = loss_fn(yb, logits)
 
-            # FIXED:
             prox = tf.constant(0.0, dtype=tf.float32)
             for v, g in zip(model.trainable_variables, gw):
                 prox += tf.nn.l2_loss(v - g)     # ½||v-g||²
@@ -168,10 +151,6 @@ def local_train(
 
     return get_model_weights_as_numpy(model)
 
-
-# ================================================================
-# FIXED evaluate (correct shape + correct class count)
-# ================================================================
 def evaluate_with_metrics(global_weights, X_test, y_test, global_num_classes):
     if X_test.ndim == 2:
         X_test = X_test.reshape((X_test.shape[0], 1, X_test.shape[1]))
@@ -195,14 +174,9 @@ def evaluate_with_metrics(global_weights, X_test, y_test, global_num_classes):
     cm = confusion_matrix(y_test, preds)
     return metrics, cm, probs, preds
 
-
-# ================================================================
-# FIXED MAIN SIMULATION LOOP
-# ================================================================
 def simulate(run_name="run", use_multikrum=False, byzantine_clients_idx=None, byzantine_mode="label_flip"):
     X_train, y_train, X_test, y_test = load_processed_data()
 
-    # FIXED class count
     global_num_classes = len(np.unique(np.concatenate([y_train, y_test])))
 
     clients = create_non_iid_partitions(X_train, y_train, NUM_CLIENTS, SAMPLES_PER_CLIENT)
@@ -338,10 +312,6 @@ def simulate(run_name="run", use_multikrum=False, byzantine_clients_idx=None, by
     print("Saved:", model_path, log_path)
     return logs
 
-
-# ================================================================
-# MAIN
-# ================================================================
 if __name__ == "__main__":
     byz_count = max(1, int(BYZANTINE_RATIO * NUM_CLIENTS))
     byz_idx = list(range(byz_count))

@@ -1,7 +1,5 @@
-# src/attacks.py  (replace existing)
 import numpy as np
 
-# src/attacks.py patch
 import numpy as np
 
 def label_flip_attack(y, flip_to=None, seed=0):
@@ -9,7 +7,7 @@ def label_flip_attack(y, flip_to=None, seed=0):
     y_new = y.copy()
     n_classes = int(y.max()) + 1
     if n_classes <= 1:
-        return y_new  # nothing to flip
+        return y_new 
     if flip_to is None:
         for i in range(len(y_new)):
             choices = list(range(n_classes))

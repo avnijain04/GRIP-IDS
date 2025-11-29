@@ -1,4 +1,3 @@
-# src/model_footprint.py
 """
 Compute model footprint: file size (MB), parameter count, and simple CPU inference latency.
 Saves results to results/model_footprint.json and prints a table.
@@ -18,7 +17,6 @@ def try_load_keras(model_path):
         import tensorflow as tf
         from tensorflow.keras.models import load_model
         m = load_model(str(model_path))
-        # some models may not compile; ignore
         return m
     except Exception as e:
         return None

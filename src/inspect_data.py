@@ -1,13 +1,10 @@
-# inspect.py — quick dataset sanity & label distribution plot
+# quick dataset sanity & label distribution plot
 import os
 from load_data import load_ciciot
 from config import SEQUENCE_LENGTH, SMALL_SAMPLE, N_ROWS_SMALL
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
-
-
 
 def inspect():
     df = load_ciciot()

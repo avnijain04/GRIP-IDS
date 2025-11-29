@@ -1,9 +1,7 @@
-# model_defs.py — small, fast models compatible with SEQUENCE_LENGTH==1
+# small, fast models compatible with SEQUENCE_LENGTH==1
 import tensorflow as tf
 from tensorflow.keras import layers, models
 from config import MODEL
-
-
 
 
 def build_cnn(input_shape, num_classes):
@@ -18,8 +16,6 @@ def build_cnn(input_shape, num_classes):
     return m
 
 
-
-
 def build_lstm(input_shape, num_classes):
     inputs = layers.Input(shape=input_shape)
     x = layers.Bidirectional(layers.LSTM(MODEL['lstm_units']))(inputs)
@@ -29,8 +25,6 @@ def build_lstm(input_shape, num_classes):
     m = models.Model(inputs, outputs)
     m.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     return m
-
-
 
 
 def build_hybrid(input_shape, num_classes):

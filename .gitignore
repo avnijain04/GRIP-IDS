@@ -1,6 +1,4 @@
-# ===========================
 # Python & Environment Files
-# ===========================
 .venv/
 venv/
 env/
@@ -9,16 +7,11 @@ __pycache__/
 *.pyo
 .DS_Store
 
-# ===========================
 # IDE Configs
-# ===========================
 .vscode/
 .idea/
 
-# ===========================
 # Model Files
-# ===========================
-# Ignore temporary or heavy checkpoints
 models/*_temp*
 models/*epoch*
 models/*_round*.h5
@@ -28,28 +21,17 @@ models/*_global*.h5
 !models/*best*.keras
 !models/*best*.h5
 
-# ===========================
 # Results / Logs / Plots
-# ===========================
 results/
 
-# ===========================
 # Dataset
-# ===========================
-# Raw & processed data not tracked
 data/train.csv
 data/test.csv
 data/validation.csv
 data/processed/
 
-# ===========================
 # Large TF / OS binaries
-# ===========================
 *.dll
 *.so
 *.exe
 
-# ===========================
-# Images & Plots (only inside results)
-# ===========================
-# (Don't globally ignore png/jpg or SHAP plots may break)

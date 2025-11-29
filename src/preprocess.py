@@ -11,17 +11,13 @@ from config import (
 )
 from load_data import load_ciciot
 
-
-# ----------------------------------------------------
-# Columns that should ALWAYS be removed
-# ----------------------------------------------------
 HARDCODE_DROP = [
     "src_ip", "dst_ip",
     "http_uri", "http_user_agent",
     "http_orig_mime_types", "http_resp_mime_types",
     "ssl_subject", "ssl_issuer",
     "dns_query",
-    "type",              # ALWAYS useless meta label
+    "type",              
     "weird_name",
     "weird_addl",
 ]
@@ -38,9 +34,7 @@ def preprocess(sequence_length=SEQUENCE_LENGTH):
     if "label" not in df.columns:
         raise ValueError("CSV must contain 'label' column")
 
-    # ----------------------------------------------------
     # DROP HEAVY/UNUSABLE COLUMNS
-    # ----------------------------------------------------
     keep_cols = [c for c in df.columns if c not in HARDCODE_DROP]
     df = df[keep_cols].copy()
 
@@ -50,24 +44,18 @@ def preprocess(sequence_length=SEQUENCE_LENGTH):
     y_raw = df["label"].astype(str).values
     df = df.drop(columns=["label"])
 
-    # ----------------------------------------------------
-    # CLEAN DATAFRAME
+   
     # Replace infinities
-    # ----------------------------------------------------
     df = df.replace([np.inf, -np.inf], np.nan)
 
-    # ----------------------------------------------------
-    # DETECT numeric vs categorical columns
-    # ----------------------------------------------------
+     # DETECT numeric vs categorical columns
     numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = [c for c in df.columns if c not in numeric_cols]
 
     print(f"Numeric columns: {len(numeric_cols)}")
     print(f"Categorical columns: {len(cat_cols)}")
 
-    # ----------------------------------------------------
     # ENCODE CATEGORICAL COLUMNS
-    # ----------------------------------------------------
     encoders = {}
     for col in cat_cols:
         le = LabelEncoder()
@@ -76,37 +64,27 @@ def preprocess(sequence_length=SEQUENCE_LENGTH):
 
     # after encoding, all columns are numeric
     df = df.fillna(0.0).astype(np.float32)
-
-    # ----------------------------------------------------
+    
     # FEATURE MATRIX
-    # ----------------------------------------------------
     X = df.values
 
-    # ----------------------------------------------------
     # LABEL ENCODING
-    # ----------------------------------------------------
     le_label = LabelEncoder()
     y = le_label.fit_transform(y_raw).astype(np.int32)
     print("Final label classes:", list(le_label.classes_))
 
-    # ----------------------------------------------------
     # STANDARDIZE
-    # ----------------------------------------------------
     scaler = StandardScaler()
     X = scaler.fit_transform(X).astype(np.float32)
 
-    # ----------------------------------------------------
     # SEQUENCE FORMATTING
-    # ----------------------------------------------------
     n, f = X.shape
     if sequence_length == 1:
         X_seq = X.reshape(n, 1, f)
     else:
         X_seq = np.repeat(X.reshape(n, 1, f), sequence_length, axis=1)
 
-    # ----------------------------------------------------
     # SPLIT
-    # ----------------------------------------------------
     X_train, X_test, y_train, y_test = train_test_split(
         X_seq, y, test_size=TEST_SIZE, random_state=RANDOM_STATE
     )

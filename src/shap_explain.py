@@ -1,4 +1,3 @@
-# src/shap_explain.py
 import os, json
 import numpy as np
 import pandas as pd
@@ -49,9 +48,7 @@ FLAT_LEN = SEQ_LEN * FEATURES
 print(f"[MODEL SHAPE] seq_len={SEQ_LEN}, features={FEATURES}, flat_len={FLAT_LEN}")
 
 
-# -----------------------------------------------------------
 # Data Loader
-# -----------------------------------------------------------
 def load_data(limit=None):
     df = pd.read_csv(f"{PROCESSED}/X_test.csv")
 
@@ -75,18 +72,14 @@ def load_data(limit=None):
     return X_seq, X_flat, y, feat_names
 
 
-# -----------------------------------------------------------
 # Prediction wrapper for SHAP
-# -----------------------------------------------------------
 def model_predict(flat_input):
     flat_input = np.array(flat_input, dtype=np.float32)
     X = flat_input.reshape((-1, SEQ_LEN, FEATURES))
     return model.predict(X, verbose=0)
 
 
-# -----------------------------------------------------------
 # SHAP normalizer — handles ALL formats
-# -----------------------------------------------------------
 def normalize_shap_output(shap_vals, flat_len):
     arr = np.array(shap_vals)
 
@@ -118,9 +111,7 @@ def normalize_shap_output(shap_vals, flat_len):
     raise ValueError(f"Unsupported SHAP output format: shape={arr.shape}")
 
 
-# -----------------------------------------------------------
 # Mean absolute SHAP importance
-# -----------------------------------------------------------
 def to_mean_abs_feature_importance(shap_vals):
     if isinstance(shap_vals, list):
         per_class = [np.mean(np.abs(v), axis=0) for v in shap_vals]
@@ -129,14 +120,12 @@ def to_mean_abs_feature_importance(shap_vals):
     return np.mean(np.abs(arr), axis=0)
 
 
-# -----------------------------------------------------------
 def safe_argsort_topk(arr, k=10):
     arr = np.array(arr).reshape(-1)
     order = np.argsort(-arr)
     return [int(x) for x in order[:k]]
 
 
-# -----------------------------------------------------------
 def plot_beeswarm_safe(shap_vals, flat_samples, feat_names, outpath):
     try:
         shap.summary_plot(shap_vals, flat_samples, feature_names=feat_names, show=False)
@@ -151,7 +140,6 @@ def plot_beeswarm_safe(shap_vals, flat_samples, feat_names, outpath):
     plt.close()
 
 
-# -----------------------------------------------------------
 def plot_classwise_bar(shap_vals, feat_names, outprefix, top_n=10):
     if isinstance(shap_vals, list):
         # multi-class
@@ -180,15 +168,11 @@ def plot_classwise_bar(shap_vals, feat_names, outprefix, top_n=10):
         plt.close()
 
 
-# -----------------------------------------------------------
 def to_scalar(x):
     arr = np.array(x, dtype=float)
     return float(arr.reshape(-1)[0])
 
 
-# -----------------------------------------------------------
-# MAIN
-# -----------------------------------------------------------
 if __name__ == "__main__":
     bg_size = min(SHAP.get("background_size", 30), 50)
     explain_size = min(SHAP.get("explain_size", 100), 200)

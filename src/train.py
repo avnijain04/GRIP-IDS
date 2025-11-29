@@ -1,4 +1,4 @@
-# src/train.py — trains cnn / lstm / hybrid and saves metrics + plots (updated)
+#  trains cnn / lstm / hybrid and saves metrics + plots (updated)
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
@@ -22,18 +22,14 @@ from config import (
 from model_defs import build_cnn, build_lstm, build_hybrid
 from plot_metrics import plot_roc_pr, plot_confusion_matrix, per_class_accuracy
 
-# ===================================================
 # Reproducibility
-# ===================================================
 np.random.seed(RANDOM_SEED)
 tf.random.set_seed(RANDOM_SEED)
 
 os.makedirs("models", exist_ok=True)
 os.makedirs("results", exist_ok=True)
 
-# ===================================================
 # Load processed NPY data
-# ===================================================
 def load_processed():
     return (
         np.load(X_TRAIN_NPY),
@@ -42,9 +38,7 @@ def load_processed():
         np.load(Y_TEST_NPY),
     )
 
-# ===================================================
 # Callbacks
-# ===================================================
 class HistoryCallback(tf.keras.callbacks.Callback):
     def __init__(self):
         self.loss = []
@@ -78,9 +72,7 @@ class PRFCallback(tf.keras.callbacks.Callback):
         self.f1.append(f)
         print(f"— PRF epoch {epoch+1}: P={p:.4f} R={r:.4f} F1={f:.4f}")
 
-# ===================================================
 # Plotting utils
-# ===================================================
 def plot_history(hist, name):
     plt.figure(figsize=(6, 4))
     plt.plot(hist["loss"], label="Train Loss")
@@ -109,9 +101,7 @@ def plot_prf(cb, name):
     plt.savefig(f"results/{name}_prf.png")
     plt.close()
 
-# ===================================================
 # Training
-# ===================================================
 def train_and_evaluate(build_fn, name):
     print(f"\n==============================")
     print(f"       TRAINING {name}")
