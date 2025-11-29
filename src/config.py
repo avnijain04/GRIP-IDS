@@ -1,98 +1,65 @@
+# config.py (suggested edits for 4GB; keep file structure same)
+
 MACHINE = "4GB"
-#MACHINE = "32GB"
+SMALL_SAMPLE = True            # keep sample mode for 4GB
+N_ROWS_SMALL = 10_000          # use full 10k sample
 
-############ DATASET SETTINGS ############
-SMALL_SAMPLE = (MACHINE == "4GB")
-N_ROWS_SMALL = 10_000
-
-TRAIN_FILE = "data/train.csv"
-TEST_FILE = "data/test.csv"
-VALID_FILE = "data/validation.csv"
+TRAIN_FILE = "data/train_test_network.csv"
+TEST_FILE = ""
+VALID_FILE = ""
 
 PROCESSED_DIR = "data/processed"
+
+# CSV paths
 X_TRAIN_FILE = f"{PROCESSED_DIR}/X_train.csv"
-X_TEST_FILE = f"{PROCESSED_DIR}/X_test.csv"
+X_TEST_FILE  = f"{PROCESSED_DIR}/X_test.csv"
 Y_TRAIN_FILE = f"{PROCESSED_DIR}/y_train.csv"
-Y_TEST_FILE = f"{PROCESSED_DIR}/y_test.csv"
+Y_TEST_FILE  = f"{PROCESSED_DIR}/y_test.csv"
 
-# New: preferred numpy save paths (recommended for DL)
+# NPY paths — REQUIRED by preprocess.py + train.py + SHAP
 X_TRAIN_NPY = f"{PROCESSED_DIR}/X_train.npy"
-X_TEST_NPY = f"{PROCESSED_DIR}/X_test.npy"
+X_TEST_NPY  = f"{PROCESSED_DIR}/X_test.npy"
 Y_TRAIN_NPY = f"{PROCESSED_DIR}/y_train.npy"
-Y_TEST_NPY = f"{PROCESSED_DIR}/y_test.npy"
+Y_TEST_NPY  = f"{PROCESSED_DIR}/y_test.npy"
 
-# How many timesteps per sequence (tunable)
-SEQUENCE_LENGTH = 20
+# sequence = 1 (connection-level). If you later extract time windows, increase to 20
+SEQUENCE_LENGTH = 1
 
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
 RANDOM_SEED = 42
 
-############ MODEL SETTINGS ############
-if MACHINE == "4GB":
-    MODEL = {
-        "cnn_filters": 16,
-        "cnn_kernel": 3,
-        "lstm_units": 16,
-        "dense_units": 32,
-        "dropout": 0.5,
-        "batch_size": 2,
-        "epochs": 1
-    }
-else:
-    MODEL = {
-        "cnn_filters": 32,
-        "cnn_kernel": 3,
-        "lstm_units": 32,
-        "dense_units": 64,
-        "dropout": 0.3,
-        "batch_size": 64,
-        "epochs": 5
-    }
+# Model sizes kept small for memory
+MODEL = {
+    "cnn_filters": 32,        # slightly larger filters for representational power
+    "cnn_kernel": 1,
+    "lstm_units": 32,
+    "dense_units": 64,
+    "dropout": 0.4,
+    "batch_size": 64,         # keep 64 to utilize CPU RAM efficiently
+    "epochs": 8               # bump epochs for meaningful training
+}
 
-############ SHAP SETTINGS ############
-if MACHINE == "4GB":
-    SHAP = {"use_kernel": True, "background_size": 30, "explain_size": 100}
-else:
-    SHAP = {"use_kernel": False, "background_size": 300, "explain_size": 800}
+# SHAP: keep kernel but small background/explain sizes on 4GB
+SHAP = {"use_kernel": True, "background_size": 20, "explain_size": 100}
 
-############ FEDERATED SETTINGS ############
-if MACHINE == "4GB":
-    NUM_CLIENTS = 3
-    SAMPLES_PER_CLIENT = 800
-    ROUNDS = 3
-    LOCAL_EPOCHS = 1
-    LOCAL_BATCH = 32
-else:
-    NUM_CLIENTS = 10
-    SAMPLES_PER_CLIENT = 8_000
-    ROUNDS = 5
-    LOCAL_EPOCHS = 2
-    LOCAL_BATCH = 64
+# Federated: keep small but run more rounds and repeat seeds for statistics
+NUM_CLIENTS = 8             # increase number of clients to test heterogeneity
+SAMPLES_PER_CLIENT = 600
+ROUNDS = 8                    # more rounds to observe convergence
+LOCAL_EPOCHS = 2
+LOCAL_BATCH = 32
 
 FEDPROX_MU = 0.01
 
-############ ROBUST FED SETTINGS ############
-if MACHINE == "4GB":
-    BYZANTINE_RATIO = 0.33
-    MULTIKRUM_F = 1
-    MULTIKRUM_M = 1
-else:
-    BYZANTINE_RATIO = 0.05
-    MULTIKRUM_F = 2
-    MULTIKRUM_M = 2
-
+BYZANTINE_RATIO = 0.33
+MULTIKRUM_F = 1
+MULTIKRUM_M = 1
 BYZANTINE_MODE = "label_flip"
 BYZANTINE_PARAMS = {"scale": 10.0, "sign_mag": 1.0}
 
-############ SECURE-FL SETTINGS ############
-if MACHINE == "4GB":
-    SECURE_NUM_CLIENTS = 3
-    SECURE_SAMPLES_PER_CLIENT = 2000
-else:
-    SECURE_NUM_CLIENTS = 5
-    SECURE_SAMPLES_PER_CLIENT = 10000
-
-SECURE_ROUNDS = 3
+SECURE_NUM_CLIENTS = 8
+SECURE_SAMPLES_PER_CLIENT = 2000
+SECURE_ROUNDS = 8
 SECURE_LOCAL_EPOCHS = 1
 SECURE_LOCAL_BATCH = 16

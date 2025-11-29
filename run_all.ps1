@@ -8,7 +8,9 @@ $steps = @(
     "python src/shap_explain.py",
     "python src/federated_sim.py",
     "python src/federated_robust.py",
-    "python src/federated_secure.py"
+    "python src/federated_secure.py",
+    "python src/model_footprint.py"
+
 )
 
 foreach ($step in $steps) {
